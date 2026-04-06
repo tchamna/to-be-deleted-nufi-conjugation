@@ -2,6 +2,10 @@
 
 Python tool that builds a **Word** (`.docx`) document of **Nufi** verb conjugation tables. It pulls conjugations from the [Resulam Nufi conjugator](https://resulam.com/nufi-conjugator/) API and formats them with `python-docx`.
 
+![Sample output: conjugation table excerpt in Word](docs/readme-output-preview.png)
+
+*Illustrative preview of the generated document layout (tables and headings); actual cells come from the API and your verb list.*
+
 ## Prerequisites
 
 - **Python 3.10+** (3.11 tested)
