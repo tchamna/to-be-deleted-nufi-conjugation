@@ -1,10 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   loadGroupedConjugation,
   loadVerbMeta,
   type ConjugateLayoutResponse,
 } from "./api";
+import {
+  applyClafricaMapping,
+  finalizeClafricaInput,
+} from "./clafricaMapping";
 import "./App.css";
+
+const CLAFRICA_STORAGE_KEY = "nufi-clafrica-enabled";
+/** Two Shift key presses within this window toggle Clafrica (global shortcut). */
+const DOUBLE_SHIFT_MS = 420;
 
 const PAYPAL_DONATE_URL =
   "https://www.paypal.com/donate?token=pKEy6Z1z9YprzcoshaYw9WR113DjH4AZ7sOW5FflLj2-b0jooeH6VfmKY0iORgCLmszYaPCrKpkRxeWc";
@@ -19,20 +27,79 @@ function wordTableStyleToAttr(style: string | undefined): string {
 
 export default function App() {
   const [verb, setVerb] = useState("");
+  const [clafricaEnabled, setClafricaEnabled] = useState(() => {
+    try {
+      return typeof localStorage !== "undefined" &&
+        localStorage.getItem(CLAFRICA_STORAGE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [metaLine, setMetaLine] = useState<string | null>(null);
   const [wordLayout, setWordLayout] = useState<ConjugateLayoutResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const lastShiftDownRef = useRef(0);
 
   useEffect(() => {
     setReady(true);
   }, []);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Shift") {
+        if (e.repeat) return;
+        const now = Date.now();
+        if (
+          lastShiftDownRef.current > 0 &&
+          now - lastShiftDownRef.current < DOUBLE_SHIFT_MS
+        ) {
+          e.preventDefault();
+          setClafricaEnabled((v) => !v);
+          lastShiftDownRef.current = 0;
+        } else {
+          lastShiftDownRef.current = now;
+        }
+        return;
+      }
+      lastShiftDownRef.current = 0;
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CLAFRICA_STORAGE_KEY, clafricaEnabled ? "1" : "0");
+    } catch {
+      /* private mode */
+    }
+  }, [clafricaEnabled]);
+
+  const onVerbChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      if (!clafricaEnabled) {
+        setVerb(raw);
+        return;
+      }
+      setVerb(
+        applyClafricaMapping(raw, { preserveAmbiguousTrailingToken: true })
+      );
+    },
+    [clafricaEnabled]
+  );
+
+  const onVerbBlur = useCallback(() => {
+    if (!clafricaEnabled) return;
+    setVerb((v) => finalizeClafricaInput(v));
+  }, [clafricaEnabled]);
+
   const onSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      const v = verb.trim();
+      const v = (clafricaEnabled ? finalizeClafricaInput(verb) : verb).trim();
       if (!v) {
         setError("Entrez un verbe.");
         return;
@@ -56,7 +123,7 @@ export default function App() {
         setLoading(false);
       }
     },
-    [verb]
+    [verb, clafricaEnabled]
   );
 
   return (
@@ -64,9 +131,31 @@ export default function App() {
       <section className="hero">
         <h1>Conjugaison Nufi</h1>
         <form className="controls" onSubmit={onSubmit}>
+          <div
+            className="clafrica-switch-row"
+            title="Raccourcis Clafrica (af, eu, …). Double Maj pour activer / désactiver."
+          >
+            <span className="clafrica-switch-label" id="clafrica-switch-label">
+              Clafrica
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={clafricaEnabled}
+              aria-labelledby="clafrica-switch-label"
+              disabled={!ready}
+              className={`clafrica-switch ${clafricaEnabled ? "clafrica-switch--on" : ""}`}
+              onClick={() => setClafricaEnabled((v) => !v)}
+            >
+              <span className="clafrica-switch-track" aria-hidden>
+                <span className="clafrica-switch-thumb" />
+              </span>
+            </button>
+          </div>
           <input
             value={verb}
-            onChange={(e) => setVerb(e.target.value)}
+            onChange={onVerbChange}
+            onBlur={onVerbBlur}
             placeholder="Ex. ndēn, mbhí, ndɑ́'sí …"
             autoComplete="off"
             aria-label="Verbe"

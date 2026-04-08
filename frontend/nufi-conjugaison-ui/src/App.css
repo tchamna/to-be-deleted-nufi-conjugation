@@ -10,25 +10,29 @@
   --accent-hover: #6d5429;
   --error: #b42318;
   --ok: #2d6a38;
-  /* Same Word style *keys* as the .docx script; colors match the hero UI (earthy browns / cream). */
-  --tw-la1-main: #6d5429;
-  --tw-la1-sub: #efe8dc;
-  --tw-la1-edge: #b5a57e;
-  --tw-la2-main: #8b5230;
-  --tw-la2-sub: #f3e8de;
-  --tw-la2-edge: #d4a080;
-  --tw-la3-main: #5a564d;
-  --tw-la3-sub: #e8e6df;
-  --tw-la3-edge: #a8a396;
-  --tw-lg-h1: #ece8df;
-  --tw-lg-h2: #faf9f6;
-  --tw-lg-edge: #bfb5a3;
-  --tw-la4-main: #9a7d2e;
-  --tw-la4-sub: #f5edd8;
-  --tw-la4-edge: #d4bc6a;
-  --tw-g5-main: #7d6b4a;
-  --tw-g5-sub: #e8e2d6;
-  --tw-g5-edge: #a89878;
+  /*
+   * Word built-in table styles — same names as python-docx / tense_style_mapping
+   * (Light List Accent 1 … Light Grid Accent 5). Colors ≈ Office default theme.
+   */
+  --doc-cell-text: #141820;
+  --doc-la1-main: #5b9bd5;
+  --doc-la1-sub: #deebf7;
+  --doc-la1-line: #8eaadb;
+  --doc-la2-main: #ed7d31;
+  --doc-la2-sub: #fce4d6;
+  --doc-la2-line: #f4b183;
+  --doc-la3-main: #a6a6a6;
+  --doc-la3-sub: #ededed;
+  --doc-la3-line: #bfbfbf;
+  --doc-lg-h1: #f2f2f2;
+  --doc-lg-h2: #fafafa;
+  --doc-lg-line: #bfbfbf;
+  --doc-la4-main: #ffc000;
+  --doc-la4-sub: #fff2cc;
+  --doc-la4-line: #ffd966;
+  --doc-g5-main: #9dc3e6;
+  --doc-g5-sub: #deebf7;
+  --doc-g5-line: #8eaadb;
 }
 
 * {
@@ -70,6 +74,72 @@ body {
   flex-wrap: wrap;
   align-items: center;
   margin: 16px 0 6px;
+}
+
+/* Pill switch: black track, white thumb (matches Clafrica toggle reference). */
+.clafrica-switch-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.clafrica-switch-label {
+  font-size: 0.9rem;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.clafrica-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.clafrica-switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+.clafrica-switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.clafrica-switch-track {
+  display: block;
+  width: 48px;
+  height: 28px;
+  background: #0a0a0a;
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.06);
+}
+
+.clafrica-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.22s ease;
+}
+
+.clafrica-switch--on .clafrica-switch-thumb {
+  transform: translateX(20px);
 }
 
 .controls input,
@@ -177,32 +247,32 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Same Word style keys as python-docx; look matches hero (cream card + brown accent). */
+/* python-docx table.style — web CSS approximates Word “Light List / Light Grid” fills. */
 .conj-table-shell {
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 22px rgba(36, 31, 20, 0.06);
+  background: #fff;
+  border: 1px solid #c4d4e5;
+  box-shadow: 0 2px 8px rgba(20, 24, 32, 0.06);
 }
 
 .conj-table-shell[data-word-style="light-list-accent-1"] {
-  border-color: var(--tw-la1-edge);
+  border-color: var(--doc-la1-line);
 }
 .conj-table-shell[data-word-style="light-list-accent-2"] {
-  border-color: var(--tw-la2-edge);
+  border-color: var(--doc-la2-line);
 }
 .conj-table-shell[data-word-style="light-list-accent-3"] {
-  border-color: var(--tw-la3-edge);
+  border-color: var(--doc-la3-line);
 }
 .conj-table-shell[data-word-style="light-grid"] {
-  border-color: var(--tw-lg-edge);
+  border-color: var(--doc-lg-line);
 }
 .conj-table-shell[data-word-style="light-list-accent-4"] {
-  border-color: var(--tw-la4-edge);
+  border-color: var(--doc-la4-line);
 }
 .conj-table-shell[data-word-style="light-grid-accent-5"] {
-  border-color: var(--tw-g5-edge);
+  border-color: var(--doc-g5-line);
 }
 
 table.conj-word {
@@ -235,98 +305,98 @@ table.conj-word tbody td {
   text-align: center;
   vertical-align: middle;
   background: #fff;
-  color: var(--text);
+  color: var(--doc-cell-text);
   font-family: "Charis SIL", Georgia, serif;
 }
 
-/* Light List Accent 1 */
+/* Light List Accent 1 — Word theme blue */
 table.conj-word[data-word-style="light-list-accent-1"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-la1-main);
+  background: var(--doc-la1-main);
   color: #fff;
 }
 table.conj-word[data-word-style="light-list-accent-1"] thead tr:nth-child(2) th {
-  background: var(--tw-la1-sub);
-  color: var(--text);
-  border-top: 1px solid var(--tw-la1-edge);
+  background: var(--doc-la1-sub);
+  color: var(--doc-cell-text);
+  border-top: 1px solid var(--doc-la1-line);
 }
 table.conj-word[data-word-style="light-list-accent-1"] tbody td {
-  border-top: 1px solid #e3ddcf;
+  border-top: 1px solid #d6e3f0;
 }
 
-/* Light List Accent 2 */
+/* Light List Accent 2 — orange */
 table.conj-word[data-word-style="light-list-accent-2"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-la2-main);
+  background: var(--doc-la2-main);
   color: #fff;
 }
 table.conj-word[data-word-style="light-list-accent-2"] thead tr:nth-child(2) th {
-  background: var(--tw-la2-sub);
-  color: var(--text);
-  border-top: 1px solid var(--tw-la2-edge);
+  background: var(--doc-la2-sub);
+  color: var(--doc-cell-text);
+  border-top: 1px solid var(--doc-la2-line);
 }
 table.conj-word[data-word-style="light-list-accent-2"] tbody td {
-  border-top: 1px solid #ead8cc;
+  border-top: 1px solid #f2d5c4;
 }
 
-/* Light List Accent 3 */
+/* Light List Accent 3 — gray */
 table.conj-word[data-word-style="light-list-accent-3"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-la3-main);
+  background: var(--doc-la3-main);
   color: #fff;
 }
 table.conj-word[data-word-style="light-list-accent-3"] thead tr:nth-child(2) th {
-  background: var(--tw-la3-sub);
-  color: var(--text);
-  border-top: 1px solid var(--tw-la3-edge);
+  background: var(--doc-la3-sub);
+  color: var(--doc-cell-text);
+  border-top: 1px solid var(--doc-la3-line);
 }
 table.conj-word[data-word-style="light-list-accent-3"] tbody td {
-  border-top: 1px solid #dcd9d0;
+  border-top: 1px solid #dbdbdb;
 }
 
-/* Light Grid */
+/* Light Grid — neutral grid */
 table.conj-word[data-word-style="light-grid"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-lg-h1);
-  color: var(--text);
-  border: 1px solid var(--tw-lg-edge);
+  background: var(--doc-lg-h1);
+  color: var(--doc-cell-text);
+  border: 1px solid var(--doc-lg-line);
   border-bottom: none;
 }
 table.conj-word[data-word-style="light-grid"] thead tr:nth-child(2) th {
-  background: var(--tw-lg-h2);
-  color: var(--text);
-  border: 1px solid var(--tw-lg-edge);
+  background: var(--doc-lg-h2);
+  color: var(--doc-cell-text);
+  border: 1px solid var(--doc-lg-line);
   border-top: none;
 }
 table.conj-word[data-word-style="light-grid"] tbody td {
-  border: 1px solid var(--tw-lg-edge);
+  border: 1px solid var(--doc-lg-line);
 }
 
-/* Light List Accent 4 */
+/* Light List Accent 4 — gold */
 table.conj-word[data-word-style="light-list-accent-4"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-la4-main);
-  color: #fff;
+  background: var(--doc-la4-main);
+  color: #1f1400;
 }
 table.conj-word[data-word-style="light-list-accent-4"] thead tr:nth-child(2) th {
-  background: var(--tw-la4-sub);
-  color: var(--text);
-  border-top: 1px solid var(--tw-la4-edge);
+  background: var(--doc-la4-sub);
+  color: var(--doc-cell-text);
+  border-top: 1px solid var(--doc-la4-line);
 }
 table.conj-word[data-word-style="light-list-accent-4"] tbody td {
-  border-top: 1px solid #ebe1c8;
+  border-top: 1px solid #ffe699;
 }
 
-/* Light Grid Accent 5 */
+/* Light Grid Accent 5 — blue grid (Temps habituel in doc) */
 table.conj-word[data-word-style="light-grid-accent-5"] thead tr:first-child th.conj-th-main {
-  background: var(--tw-g5-main);
-  color: #fff;
-  border: 1px solid var(--tw-g5-edge);
+  background: var(--doc-g5-main);
+  color: var(--doc-cell-text);
+  border: 1px solid var(--doc-g5-line);
   border-bottom: none;
 }
 table.conj-word[data-word-style="light-grid-accent-5"] thead tr:nth-child(2) th {
-  background: var(--tw-g5-sub);
-  color: var(--text);
-  border: 1px solid var(--tw-g5-edge);
+  background: var(--doc-g5-sub);
+  color: var(--doc-cell-text);
+  border: 1px solid var(--doc-g5-line);
   border-top: none;
 }
 table.conj-word[data-word-style="light-grid-accent-5"] tbody td {
-  border: 1px solid var(--tw-lg-edge);
+  border: 1px solid var(--doc-lg-line);
 }
 
 .card {
