@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Nufi conjugation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Charis SIL", Georgia, serif;
+      background: linear-gradient(165deg, #f8f4eb 0%, #ebe4d6 100%);
+      color: #241f14;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 16px 56px;
+    }
+    .hero {
+      background: #fff;
+      border: 1px solid #e3ddcf;
+      border-radius: 20px;
+      padding: 26px 24px;
+      box-shadow: 0 12px 40px rgba(36, 31, 20, 0.1);
+    }
+    h1 { margin: 0 0 10px; font-size: 1.85rem; font-weight: 700; }
+    .sub { margin: 0 0 18px; line-height: 1.55; color: #4a453a; font-size: 1rem; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 16px 0 6px;
+    }
+    input, button {
+      font: inherit;
+      border-radius: 12px;
+      border: 1px solid #cfc6b6;
+      padding: 12px 14px;
+    }
+    input#verb {
+      flex: 1 1 320px;
+      background: #fff;
+      min-width: 200px;
+    }
+    button#submit {
+      background: #7a5f2f;
+      color: #fff;
+      border-color: #6d5429;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button#submit:disabled { opacity: 0.65; cursor: wait; }
+    .hero-support {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #e3ddcf;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .paypal-support-link {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      text-decoration: none;
+      color: #6f6a61;
+      font-size: 0.82rem;
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      max-width: 100%;
+    }
+    .paypal-support-img {
+      display: block;
+      height: auto;
+      max-width: min(122px, 100%);
+    }
+    .paypal-support-label { line-height: 1.35; }
+    .paypal-support-link:hover .paypal-support-label {
+      color: #7a5f2f;
+      text-decoration: underline;
+    }
+    .site-footer {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid #e3ddcf;
+      max-width: 52rem;
+    }
+    .site-footer p {
+      margin: 0;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #6f6a61;
+    }
+    .site-footer a { color: #7a5f2f; word-break: break-all; }
+    .site-footer a:hover { color: #6d5429; }
+    .hint { color: #6f6a61; font-size: 0.92rem; margin-top: 8px; }
+    .status { margin: 16px 0 0; min-height: 26px; line-height: 1.45; }
+    .error { color: #b42318; }
+    .ok { color: #2d6a38; }
+    .meta { font-size: 1.05rem; margin-top: 8px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-top: 26px;
+    }
+    /* Disposition type nufi_conjugation_to_word_document_short : un grand tableau par groupe */
+    .grid.word-doc-layout {
+      grid-template-columns: 1fr;
+    }
+    /* Cartes document : même idée que l’exemple (titre fusionné + sous-colonnes, fond bleu clair) */
+    .card.word-group {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0 0 22px;
+      overflow: visible;
+    }
+    .conj-table-caption {
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.82rem;
+      color: #7a828a;
+      margin: 0 0 10px 2px;
+      letter-spacing: 0.02em;
+    }
+    .conj-table-shell {
+      border: 1px solid #c4d4e5;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    table.conj-word {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.98rem;
+    }
+    table.conj-word thead tr:first-child th.conj-th-main {
+      background: #b3cfea;
+      color: #141820;
+      font-weight: 600;
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.95rem;
+      padding: 12px 10px;
+      text-align: center;
+      border: none;
+    }
+    table.conj-word thead tr:nth-child(2) th {
+      background: #dceaf7;
+      color: #141820;
+      font-weight: 600;
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      font-size: 0.78rem;
+      line-height: 1.3;
+      padding: 10px 8px;
+      text-align: center;
+      border: none;
+      border-top: 1px solid #a8c0dc;
+    }
+    table.conj-word tbody td {
+      padding: 9px 10px;
+      text-align: center;
+      vertical-align: middle;
+      background: #fff;
+      color: #141820;
+      font-family: "Charis SIL", Georgia, serif;
+      border-left: none;
+      border-right: none;
+      border-top: 1px solid #dfe6ee;
+    }
+    table.conj-word tbody tr:first-child td {
+      border-top: 1px solid #dfe6ee;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e3ddcf;
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 22px rgba(36, 31, 20, 0.06);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #3d3829;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.98rem; }
+    td {
+      padding: 7px 8px;
+      border-top: 1px solid #eee5d6;
+      text-align: center;
+      vertical-align: middle;
+    }
+    tr:first-child td { border-top: 0; }
+    .muted { color: #777168; text-align: center; }
+    .badge {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-family: system-ui, sans-serif;
+      background: #ebe4d6;
+      color: #5c5648;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Nufi conjugation <span class="badge">conjugaison_nufi</span></h1>
+      <p class="sub">
+        Conjugaisons via l’API FastAPI (<code>conjugaison_nufi</code>). Déploiement :
+        <a href="https://nufi-conjugator-esgcebhzepdaejdw.canadacentral-01.azurewebsites.net/" rel="noopener">Azure</a>
+        — en local, utilisez <code>?api=http://127.0.0.1:5000</code> si besoin.
+      </p>
+      <form id="form" class="controls">
+        <input id="verb" name="verb" type="text" placeholder="Ex. ndēn, mbhí, ndɑ́'sí …" autocomplete="off" />
+        <button id="submit" type="submit">Conjuguer</button>
+      </form>
+      <div class="hero-support">
+        <a class="paypal-support-link" href="https://www.paypal.com/donate?token=pKEy6Z1z9YprzcoshaYw9WR113DjH4AZ7sOW5FflLj2-b0jooeH6VfmKY0iORgCLmszYaPCrKpkRxeWc" target="_blank" rel="noopener noreferrer sponsored" title="Ouvrir la page de don PayPal">
+          <img class="paypal-support-img" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Faire un don avec PayPal" width="122" height="47" decoding="async" />
+          <span class="paypal-support-label">PayPal — soutenir le projet</span>
+        </a>
+      </div>
+      <div class="hint" id="hint">Chargement des temps…</div>
+      <div class="status muted" id="status"></div>
+      <div class="meta" id="verb_info" hidden></div>
+    </section>
+    <section id="results" class="grid" aria-live="polite"></section>
+    <footer class="site-footer">
+      <p>
+        Cette conjugaison est basée sur l’étude détaillée de la conjugaison en langue fe’efe’e, tirée du livre ‘La grammaire des langues bamilékés&nbsp;: cas du nùfi’. 
+        <a href="http://bit.ly/grammaire_bamileke_nufi" target="_blank" rel="noopener noreferrer">http://bit.ly/grammaire_bamileke_nufi</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById("form");
+      const verbInput = document.getElementById("verb");
+      const submit = document.getElementById("submit");
+      const status = document.getElementById("status");
+      const verbInfo = document.getElementById("verb_info");
+      const results = document.getElementById("results");
+      const hint = document.getElementById("hint");
+
+      /** Same order as GET /tenses (api_nufi_conjugation.LOCAL_TENSES) — used if the API is unreachable */
+      const TENSES_EMBEDDED = [
+        { id: "present-continuous", title: "Présent progressif (maintenant)" },
+        { id: "passee-immediat", title: "Passé composé / passé récent" },
+        { id: "passee-6h", title: "Passé récent (≈ 6 h)" },
+        { id: "passee-hier", title: "Passé d'hier" },
+        { id: "passee-au-moins-2-jours", title: "Passé (≥ 2 jours)" },
+        { id: "passee-habituel", title: "Passé habituel" },
+        { id: "passee-lointain", title: "Passé lointain" },
+        { id: "futur-proche", title: "Futur proche" },
+        { id: "futur-lointain", title: "Futur lointain" },
+        { id: "present-habituel", title: "Présent habituel" },
+        { id: "imperatif", title: "Impératif" }
+      ];
+
+      /** @type {{ id: string, title: string }[]} */
+      let tenseList = TENSES_EMBEDDED.slice();
+      /** @type {boolean} */
+      let apiReachable = false;
+
+      /** Backend déployé (FastAPI) — même dépôt que ce front */
+      var API_REMOTE_DEFAULT =
+        "https://nufi-conjugator-esgcebhzepdaejdw.canadacentral-01.azurewebsites.net";
+
+      /** Port où tourne en général uvicorn dans ce projet */
+      var API_LOCAL_DEFAULT = "http://127.0.0.1:5000";
+
+      /** @type {string} */
+      var resolvedApiBase = "";
+      /** true si ?api=... */
+      var userPinnedApi = false;
+      /** true si la 2e base a fonctionné après échec de la 1re */
+      var usedFallback = false;
+
+      /**
+       * Liste d’URL de base à essayer dans l’ordre.
+       * — Page HTTPS sur un autre port que 5000 : uniquement Azure (sinon contenu mixte avec http://127.0.0.1).
+       * — Page HTTP locale : d’abord 127.0.0.1:5000, puis Azure.
+       * — ?api=URL : une seule base.
+       */
+      function getApiCandidates() {
+        try {
+          var params = new URLSearchParams(window.location.search || "");
+          var fromQuery = params.get("api");
+          if (fromQuery) {
+            userPinnedApi = true;
+            return [fromQuery.replace(/\/$/, "")];
+          }
+        } catch (e) {}
+
+        var host = window.location.hostname || "";
+        var isLocal =
+          host === "localhost" ||
+          host === "127.0.0.1" ||
+          host === "[::1]";
+        var port = window.location.port;
+        var secure = window.location.protocol === "https:";
+
+        if (isLocal && port === "5000") {
+          return [window.location.origin];
+        }
+
+        if (isLocal && secure) {
+          return [API_REMOTE_DEFAULT];
+        }
+
+        if (isLocal && !secure) {
+          return [API_LOCAL_DEFAULT, API_REMOTE_DEFAULT];
+        }
+
+        if (host.indexOf("azurewebsites.net") !== -1) {
+          return [window.location.origin];
+        }
+
+        if (window.location.protocol === "file:") {
+          return [API_REMOTE_DEFAULT];
+        }
+
+        return [API_REMOTE_DEFAULT];
+      }
+
+      function joinBasePath(base, path) {
+        var b = base.replace(/\/$/, "");
+        if (path.charAt(0) !== "/") {
+          path = "/" + path;
+        }
+        return b + path;
+      }
+
+      /**
+       * Essaie chaque base dans l’ordre (local HTTP puis Azure, ou Azure seul si page HTTPS).
+       */
+      async function fetchJsonApi(path) {
+        var candidates = getApiCandidates();
+        usedFallback = false;
+        var lastErr = null;
+        for (var i = 0; i < candidates.length; i++) {
+          var base = candidates[i];
+          var url = joinBasePath(base, path);
+          try {
+            resolvedApiBase = base;
+            var data = await fetchJson(url);
+            if (i > 0) {
+              usedFallback = true;
+            }
+            return data;
+          } catch (err) {
+            lastErr = err;
+          }
+        }
+        throw lastErr || new Error("Aucune base API joignable");
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      async function fetchJson(url) {
+        var res;
+        try {
+          res = await fetch(url, { mode: "cors", credentials: "omit" });
+        } catch (netErr) {
+          var hint =
+            netErr && netErr.message
+              ? netErr.message
+              : "Échec réseau";
+          throw new Error(
+            hint +
+              " — CORS, hors-ligne, ou page HTTPS qui bloque http://127.0.0.1 (utilisez le front en http:// ou ?api=https://…)"
+          );
+        }
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          var ct = res.headers.get("content-type") || "";
+          if (res.status >= 500 && ct.indexOf("json") === -1) {
+            throw new Error(
+              "HTTP " +
+                res.status +
+                " (réponse non-JSON — souvent erreur serveur Azure : vérifiez les logs et startup.sh / gunicorn)"
+            );
+          }
+          const msg = data.error || data.detail || JSON.stringify(data).slice(0, 200);
+          throw new Error(msg || ("HTTP " + res.status));
+        }
+        return data;
+      }
+
+      async function loadTenses() {
+        usedFallback = false;
+        try {
+          const data = await fetchJsonApi("/tenses");
+          if (Array.isArray(data.tenses) && data.tenses.length) {
+            tenseList = data.tenses;
+          }
+          apiReachable = true;
+          var extra = "";
+          if (usedFallback) {
+            extra =
+              " — connexion via " +
+              resolvedApiBase +
+              " (la 1re option était injoignable).";
+          }
+          hint.textContent =
+            tenseList.length +
+            " temps — saisissez un verbe puis validez. API : " +
+            resolvedApiBase +
+            extra;
+        } catch (e) {
+          tenseList = TENSES_EMBEDDED.slice();
+          apiReachable = true;
+          var detail = e && e.message ? escapeHtml(e.message) : "Erreur inconnue";
+          hint.innerHTML =
+            "<strong>/tenses indisponible</strong> (" +
+            detail +
+            ") — utilisation de la liste de temps intégrée. " +
+            "Vous pouvez quand même conjuguer si <code>/conjugate</code> répond. " +
+            "Redéployez l’API avec la dernière version pour activer <code>/tenses</code> et <code>/verb-meta</code>. " +
+            "<br /><br />HTTPS + API locale HTTP : ouvrez le front en <code>http://localhost:…</code> ou " +
+            "<code>?api=" +
+            escapeHtml(API_REMOTE_DEFAULT) +
+            "</code>.";
+          console.error(e);
+        }
+      }
+
+      function rowsFromRawParallel(raw, tenseId) {
+        if (!raw || !Array.isArray(raw) || !raw.length) return null;
+        if (
+          tenseId === "present-continuous" ||
+          tenseId === "passee-habituel"
+        ) {
+          if (raw.length < 2) return null;
+          var a = raw[0];
+          var b = raw[1];
+          if (!Array.isArray(a) || !Array.isArray(b)) return null;
+          var n = Math.max(a.length, b.length);
+          var out = [];
+          var j;
+          for (j = 0; j < n; j++) {
+            out.push([
+              a[j] != null && String(a[j]).trim() ? String(a[j]) : "—",
+              b[j] != null && String(b[j]).trim() ? String(b[j]) : "—"
+            ]);
+          }
+          return out;
+        }
+        if (tenseId === "futur-proche" || tenseId === "futur-lointain") {
+          if (raw.length < 3) return null;
+          var a2 = raw[0];
+          var b2 = raw[1];
+          var c2 = raw[2];
+          if (!Array.isArray(a2) || !Array.isArray(b2) || !Array.isArray(c2))
+            return null;
+          var n2 = Math.max(a2.length, b2.length, c2.length);
+          var out2 = [];
+          var k;
+          for (k = 0; k < n2; k++) {
+            out2.push([
+              a2[k] != null && String(a2[k]).trim() ? String(a2[k]) : "—",
+              b2[k] != null && String(b2[k]).trim() ? String(b2[k]) : "—",
+              c2[k] != null && String(c2[k]).trim() ? String(c2[k]) : "—"
+            ]);
+          }
+          return out2;
+        }
+        return null;
+      }
+
+      /** Réponse API { rows, raw } — zip 2/3 listes parallèles avant d’éviter 6 colonnes fantômes. */
+      function rowsFromResponse(data, tenseId) {
+        if (data && typeof data === "object" && !Array.isArray(data)) {
+          var fromR = rowsFromRawParallel(data.raw, tenseId);
+          if (fromR) return fromR;
+          if (data.rows && data.rows.length) return data.rows;
+        }
+        if (Array.isArray(data)) {
+          if (
+            (tenseId === "present-continuous" ||
+              tenseId === "passee-habituel") &&
+            data.length === 2 &&
+            Array.isArray(data[0]) &&
+            Array.isArray(data[1])
+          ) {
+            var ap = data[0];
+            var bp = data[1];
+            return ap.map(function (x, i) {
+              return [x, bp[i] != null ? bp[i] : "—"];
+            });
+          }
+          if (
+            (tenseId === "futur-proche" || tenseId === "futur-lointain") &&
+            data.length === 3 &&
+            Array.isArray(data[0]) &&
+            Array.isArray(data[1]) &&
+            Array.isArray(data[2])
+          ) {
+            var af = data[0];
+            var bf = data[1];
+            var cf = data[2];
+            var nf = Math.max(af.length, bf.length, cf.length);
+            var rf = [];
+            var fi;
+            for (fi = 0; fi < nf; fi++) {
+              rf.push([
+                af[fi] != null ? af[fi] : "—",
+                bf[fi] != null ? bf[fi] : "—",
+                cf[fi] != null ? cf[fi] : "—"
+              ]);
+            }
+            return rf;
+          }
+          if (data.every(function (x) { return typeof x === "string"; })) {
+            return data.map(function (x) { return [x]; });
+          }
+          return data.map(function (row) {
+            return Array.isArray(row) ? row : [String(row)];
+          });
+        }
+        return [["—"]];
+      }
+
+      function renderTable(rows) {
+        if (!rows || !rows.length) {
+          return '<tr><td class="muted">—</td></tr>';
+        }
+        return rows
+          .map(function (row) {
+            const cells = (Array.isArray(row) ? row : [row]).map(function (cell) {
+              return "<td>" + escapeHtml(cell != null ? cell : "—") + "</td>";
+            });
+            return "<tr>" + cells.join("") + "</tr>";
+          })
+          .join("");
+      }
+
+      /** Si /word-layout manque (Azure ancien) : même TIME_GROUPS que api_nufi_conjugation.py */
+      function wordLayoutMetaFromTimeGroups() {
+        var RES = [
+          "present-continuous",
+          "passee-immediat",
+          "passee-6h",
+          "passee-hier",
+          "passee-au-moins-2-jours",
+          "passee-habituel",
+          "passee-lointain",
+          "futur-proche",
+          "futur-lointain",
+          "present-habituel",
+          "imperatif"
+        ];
+        var TGF = [
+          ["Présent", [[0, "Présent"], [10, "Impératif"]]],
+          ["Passé Récent", [[1, "Passé Composé"], [2, "Passé Récent"]]],
+          [
+            "Passé",
+            [
+              [3, "Passé d'hier"],
+              [4, "Passé (>= 2 jours)"],
+              [6, "Passé Lointain"]
+            ]
+          ],
+          ["Futur Proche", [[7, "Futur Proche"]]],
+          ["Futur Lointain", [[8, "Futur Lointain"]]],
+          ["Temps Habituel", [[9, "Présent Habituel"], [5, "Passé Habituel"]]]
+        ];
+        var groups = [];
+        for (var gi = 0; gi < TGF.length; gi++) {
+          var title = TGF[gi][0];
+          var pairs = TGF[gi][1];
+          var tenses = pairs.map(function (p) {
+            return { id: RES[p[0]], subtitle: p[1] };
+          });
+          groups.push({ title: title, style_key: title, tenses: tenses });
+        }
+        return { groups: groups };
+      }
+
+      function mergeWordStyleGroup(blocks, rowsByTense) {
+        var headers = [];
+        var data = null;
+        for (var bi = 0; bi < blocks.length; bi++) {
+          var tenseId = blocks[bi][0];
+          var subtitle = blocks[bi][1];
+          var rawRows = rowsByTense[tenseId];
+          if (!rawRows || !rawRows.length) rawRows = [["—"]];
+          var maxCols = 1;
+          for (var ri = 0; ri < rawRows.length; ri++) {
+            if (rawRows[ri].length > maxCols) maxCols = rawRows[ri].length;
+          }
+          var normRows = rawRows.map(function (r) {
+            var row = r.map(function (c) {
+              return String(c).trim() ? String(c) : "—";
+            });
+            while (row.length < maxCols) row.push("—");
+            return row;
+          });
+          var w = maxCols;
+          var hi;
+          var numbered =
+            tenseId === "present-continuous" ||
+            tenseId === "passee-habituel";
+          if (w > 1) {
+            for (hi = 0; hi < w; hi++) {
+              headers.push(
+                numbered ? subtitle + " " + (hi + 1) : subtitle
+              );
+            }
+          } else {
+            headers.push(subtitle);
+          }
+          if (data === null) {
+            data = normRows.map(function (r) { return r.slice(); });
+          } else {
+            var accW = data[0].length;
+            var n = Math.max(data.length, normRows.length);
+            var merged = [];
+            var i;
+            for (i = 0; i < n; i++) {
+              var left = i < data.length ? data[i].slice() : new Array(accW).fill("—");
+              var right = i < normRows.length ? normRows[i].slice() : new Array(w).fill("—");
+              while (left.length < accW) left.push("—");
+              while (right.length < w) right.push("—");
+              merged.push(left.concat(right));
+            }
+            data = merged;
+          }
+        }
+        return { headers: headers, rows: data || [["—"]] };
+      }
+
+      async function buildGroupedLayoutClient(verb, meta, tlist) {
+        var wl = null;
+        try {
+          wl = await fetchJsonApi("/word-layout");
+        } catch (wlErr) {
+          console.warn(wlErr);
+        }
+        if (!wl || !Array.isArray(wl.groups) || !wl.groups.length) {
+          wl = wordLayoutMetaFromTimeGroups();
+        }
+        var rowsByTense = {};
+        var i;
+        for (i = 0; i < tlist.length; i++) {
+          var tid = tlist[i].id;
+          try {
+            var cdata = await fetchJsonApi(
+              "/conjugate?verb=" +
+                encodeURIComponent(verb) +
+                "&tense=" +
+                encodeURIComponent(tid)
+            );
+            rowsByTense[tid] = rowsFromResponse(cdata, tid);
+          } catch (e) {
+            rowsByTense[tid] = [["—"]];
+          }
+        }
+        var tGrp =
+          meta && meta.group != null && String(meta.group).length
+            ? String(meta.group)
+            : "—";
+        var groups = [];
+        for (i = 0; i < wl.groups.length; i++) {
+          var gm = wl.groups[i];
+          var blocks = gm.tenses.map(function (t) {
+            return [t.id, t.subtitle];
+          });
+          var m = mergeWordStyleGroup(blocks, rowsByTense);
+          groups.push({
+            title: gm.title,
+            style_key: gm.style_key || gm.title,
+            headers: m.headers,
+            rows: m.rows
+          });
+        }
+        return { verb: verb, tone_group: tGrp, groups: groups };
+      }
+
+      function renderWordLayoutGroup(g, verb, toneGroup) {
+        var headers = g.headers || [];
+        var n = headers.length > 0 ? headers.length : 1;
+        var tg =
+          toneGroup != null && String(toneGroup).length
+            ? String(toneGroup)
+            : "—";
+        var caption =
+          escapeHtml(verb) + " · Groupe " + escapeHtml(tg);
+        var subRow =
+          "<tr>" +
+          headers
+            .map(function (h) {
+              return "<th>" + escapeHtml(h) + "</th>";
+            })
+            .join("") +
+          "</tr>";
+        if (headers.length === 0) {
+          subRow = "<tr><th>—</th></tr>";
+        }
+        var thead =
+          "<thead><tr><th class=\"conj-th-main\" colspan=\"" +
+          n +
+          "\">" +
+          escapeHtml(g.title) +
+          "</th></tr>" +
+          subRow +
+          "</thead>";
+        var body = renderTable(g.rows || []);
+        return (
+          '<article class="card word-group">' +
+          '<div class="conj-table-caption">' +
+          caption +
+          "</div>" +
+          '<div class="conj-table-shell">' +
+          '<table class="conj-word">' +
+          thead +
+          "<tbody>" +
+          body +
+          "</tbody></table></div></article>"
+        );
+      }
+
+      async function conjugate(verb) {
+        status.className = "status muted";
+        status.textContent = "Conjugaison en cours…";
+        verbInfo.hidden = true;
+        verbInfo.textContent = "";
+        results.innerHTML = "";
+        submit.disabled = true;
+
+        const fragments = [];
+
+        try {
+          var meta = null;
+          try {
+            meta = await fetchJsonApi(
+              "/verb-meta?verb=" + encodeURIComponent(verb)
+            );
+            var gloss = meta.translated_verb ? meta.translated_verb : "—";
+            verbInfo.hidden = false;
+            verbInfo.textContent =
+              meta.verb + " : " + gloss + " (groupe tonal : " + meta.group + ")";
+          } catch (metaErr) {
+            verbInfo.hidden = true;
+            console.warn(metaErr);
+          }
+
+          var layout = null;
+          try {
+            layout = await fetchJsonApi(
+              "/conjugate-layout?verb=" + encodeURIComponent(verb)
+            );
+          } catch (layoutErr) {
+            console.warn(layoutErr);
+          }
+
+          if (!layout || !Array.isArray(layout.groups) || !layout.groups.length) {
+            layout = await buildGroupedLayoutClient(verb, meta, tenseList);
+          }
+
+          results.className = "grid word-doc-layout";
+          var tGrp =
+            layout.tone_group != null ? layout.tone_group : "—";
+          for (var gi = 0; gi < layout.groups.length; gi++) {
+            fragments.push(
+              renderWordLayoutGroup(
+                layout.groups[gi],
+                layout.verb || verb,
+                tGrp
+              )
+            );
+          }
+
+          results.innerHTML = fragments.join("");
+          status.className = "status ok";
+          status.textContent = "Conjugaison chargée pour « " + verb + " ».";
+        } catch (e) {
+          status.className = "status error";
+          status.textContent = e && e.message ? e.message : "Échec du chargement.";
+          console.error(e);
+        } finally {
+          submit.disabled = false;
+        }
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const verb = verbInput.value.trim();
+        if (!verb) {
+          status.className = "status error";
+          status.textContent = "Entrez un verbe.";
+          return;
+        }
+        void conjugate(verb);
+      });
+
+      loadTenses();
+    })();
+  </script>
+</body>
+</html>
